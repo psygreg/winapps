@@ -638,6 +638,10 @@ function waCheckInstallDependencies() {
             if command -v wlfreerdp &>/dev/null; then
                 FREERDP_COMMAND="wlfreerdp"
             fi
+            # WLFreeRDP 3 command catch for certain OS
+            if command -v wlfreerdp3 &>/dev/null; then
+                FREERDP_COMMAND="wlfreerdp3"
+            fi
         fi
 
         # Check common commands used to launch FreeRDP.
