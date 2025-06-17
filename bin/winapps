@@ -254,12 +254,21 @@ function waGetFreeRDPCommand() {
 
     # Attempt to set a FreeRDP command if the command variable is empty.
     if [ -z "$FREERDP_COMMAND" ]; then
-        # Check for 'xfreerdp'.
-        if command -v xfreerdp &>/dev/null; then
-            # Check FreeRDP major version is 3 or greater.
-            FREERDP_MAJOR_VERSION=$(xfreerdp --version | head -n 1 | grep -o -m 1 '\b[0-9]\S*' | head -n 1 | cut -d'.' -f1)
-            if [[ $FREERDP_MAJOR_VERSION =~ ^[0-9]+$ ]] && ((FREERDP_MAJOR_VERSION >= 3)); then
-                FREERDP_COMMAND="xfreerdp"
+        # Use WLFreeRDP if a Wayland session is detected
+        if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+            if command -v wlfreerdp &>/dev/null; then
+                FREERDP_COMMAND="wlfreerdp"
+            fi
+        fi
+
+        # Check common commands used to launch FreeRDP.
+        if [ -z "$FREERDP_COMMAND" ]; then
+            if command -v xfreerdp &>/dev/null; then
+                # Check FreeRDP major version is 3 or greater.
+                FREERDP_MAJOR_VERSION=$(xfreerdp --version | head -n 1 | grep -o -m 1 '\b[0-9]\S*' | head -n 1 | cut -d'.' -f1)
+                if [[ $FREERDP_MAJOR_VERSION =~ ^[0-9]+$ ]] && ((FREERDP_MAJOR_VERSION >= 3)); then
+                    FREERDP_COMMAND="xfreerdp"
+                fi
             fi
         fi
 
